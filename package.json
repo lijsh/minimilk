@@ -8,5 +8,14 @@
   },
   "keywords": [],
   "author": "lijsh <sysulijs@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lijsh/minimilk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lijsh/minimilk/issues"
+  },
+  "homepage": "https://github.com/lijsh/minimilk#readme"
 }
