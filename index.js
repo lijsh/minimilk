@@ -1,3 +1,14 @@
+const isNumber = value => {
+  if (typeof value === 'number') return true
+  if (/^0x[0-9a-f]+$/i.test(value)) return true
+  return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(value)
+}
+
+const setArg = (key, val, obj) => {
+  const value = isNumber(val) ? Number(val) : val
+  obj[key] = value
+}
+
 module.exports = args => {
   const argv = { _: [] }
   let i = 0
@@ -7,15 +18,15 @@ module.exports = args => {
     if (/^--.+=/.test(arg)) {
       const m = arg.match(/^--([^=]+)=([\s\S]*)$/);
       const [_, key, value] = m
-      argv[key] = value
+      setArg(key, value, argv)
     } else if (/^--no-.+/.test(arg)) { // process '--no-foo' type arg
       const key = arg.match(/^--no-(.+)/)[1]
       argv[key] = false
-    } else if (/^--.+/.test(arg)) { // process '--foo' 及 '--foo bar' type arg
+    } else if (/^--.+/.test(arg)) { // process '--foo' and '--foo bar' type arg
       const key = arg.match(/^--(.+)/)[1]
       const next = args[i + 1]
       if (next && !/^-/.test(next)) {
-        argv[key] = next
+        setArg(key, next, argv)
         i++
       } else {
         argv[key] = true
@@ -29,20 +40,20 @@ module.exports = args => {
         const next = arg.slice(j + 2)
 
         if (/[a-zA-Z]/.test(letter) && /=/.test(next)) {
-          argv[letter] = next.split('=')[1]
+          setArg(letter, next.split('=')[1], argv)
           end = true
           break
         }
 
         if (/[a-zA-Z]/.test(letter)
         && /-?\d+(\.\d*)?(e-?\d+)?/.test(next)) {
-          argv[letter] = next
+          setArg(letter, next, argv)
           end = true
           break
         }
 
         if (letters[j + 1] && letters[j + 1].match(/\W/)) {
-          argv[letter] = arg.slice(j + 2)
+          setArg(letter, arg.slice(j + 2), argv)
           end = true
           break
         }
@@ -54,7 +65,7 @@ module.exports = args => {
       const key = arg.split('').pop()
       if (!end) {
         if (args[i + 1] && !/^(-|--)[^-]/.test(args[i + 1])) {
-          argv[key] = args[i + 1]
+          setArg(key, args[i + 1], argv)
           i++
         } else {
           argv[key] = true
